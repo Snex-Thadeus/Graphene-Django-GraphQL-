@@ -1,0 +1,35 @@
+from graphene_django.forms.mutation import DjangoFormMutation
+
+class MyForm(forms.Form):
+    name = forms.CharField()
+
+class MyMutation(DjangoFormMutation):
+    class Meta:
+        form_class = MyForm
+
+
+# MyMutation will automatically receive an input argument. 
+# This argument should be a dict where the key is name and the value is a string.
+
+# DjangoModelFormMutation will pull the fields from a ModelForm.
+
+from graphene_django.forms.mutation import DjangoModelFormMutation
+
+class Pet(models.Model):
+    name = models.CharField()
+
+class PetForm(forms.ModelForm):
+    class Meta:
+        model = Pet
+        fields = ('name',)
+
+# This will get returned when the mutation completes successfully
+class PetType(DjangoObjectType):
+    class Meta:
+        model = Pet
+
+class PetMutation(DjangoModelFormMutation):
+    pet = Field(PetType)
+
+    class Meta:
+        form_class = PetForm
